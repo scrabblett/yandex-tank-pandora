@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  yandex-tank:
+    build:
+      dockerfile: Dockerfile
+    command: yandex-tank -c /app/config/load.yaml
+    volumes:
+      - type: bind
+        source: ./config
+        target: /app/config
+      - type: bind
+        source: ./scenarios
+        target: /app/scenarios
+      - type: bind
+        source: ./logs
+        target: /app/logs
