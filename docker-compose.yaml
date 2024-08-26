@@ -3,14 +3,34 @@ services:
   yandex-tank:
     build:
       dockerfile: Dockerfile
-    command: yandex-tank -c /app/config/load.yaml
+    command: yandex-tank -c /app/load.yaml
+    depends_on:
+      grafana:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:8.3.3-ubuntu
+    env_file: ./config/grafana/configuration.env
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      influxdb:
+        condition: service_healthy
+
+  influxdb:
+    image: influxdb:1.8.10
+    env_file: ./config/influxdb/configuration.env
+    ports:
+      - '8086:8086'
     volumes:
-      - type: bind
-        source: ./config
-        target: /app/config
-      - type: bind
-        source: ./scenarios
-        target: /app/scenarios
-      - type: bind
-        source: ./logs
-        target: /app/logs
+      - ./config/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
+    healthcheck:
+      test: [ "CMD-SHELL", "influx -database 'influx' -execute 'SHOW DATABASES' || exit 1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
