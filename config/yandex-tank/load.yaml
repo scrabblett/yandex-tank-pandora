@@ -1,0 +1,16 @@
+pandora:
+  package: yandextank.plugins.Pandora
+  enabled: true
+  pandora_cmd: pandora
+  config_file: config/yandex-tank/pandora_config.yaml
+
+influx:
+  package: yandextank.plugins.InfluxUploader
+  enabled: true
+  address: influxdb
+  port: 8086
+  database: influx
+  username: admin
+  password: admin
+  prefix_measurement: 'load_test_'
+  labeled: true

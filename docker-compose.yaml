@@ -3,7 +3,17 @@ services:
   yandex-tank:
     build:
       dockerfile: Dockerfile
-    command: yandex-tank -c /app/load.yaml
+    command: yandex-tank -c /app/config/yandex-tank/load.yaml
+    volumes:
+      - type: bind
+        source: ./config
+        target: /app/config
+      - type: bind
+        source: ./scenarios
+        target: /app/scenarios
+      - type: bind
+        source: ./logs
+        target: /app/logs
     depends_on:
       grafana:
         condition: service_healthy
@@ -23,12 +33,16 @@ services:
         condition: service_healthy
 
   influxdb:
-    image: influxdb:1.8.10
+    build:
+      dockerfile: ./config/influxdb/Dockerfile
     env_file: ./config/influxdb/configuration.env
     ports:
       - '8086:8086'
     volumes:
       - ./config/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
+      - ./config/influxdb/entrypoint.sh:/etc/influxdb/entrypoint.sh
+    command:
+      - exec /etc/influxdb/entrypoint.sh
     healthcheck:
       test: [ "CMD-SHELL", "influx -database 'influx' -execute 'SHOW DATABASES' || exit 1" ]
       interval: 10s

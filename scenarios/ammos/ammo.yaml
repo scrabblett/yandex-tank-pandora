@@ -1,0 +1,11 @@
+requests:
+  - name: "GET_PET"
+    uri: '/v2/pet/1'
+    method: GET
+    tag: GET_PET
+
+scenarios:
+  - name: "DEFAULT_SCENARIO"
+    requests: [
+      "GET_PET"
+    ]
