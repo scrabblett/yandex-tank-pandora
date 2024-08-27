@@ -15,7 +15,7 @@ pools:
       type: phout
       destination: ./phout.log
     rps:
-      - {duration: 1s, type: const, ops: 5}
+      - {duration: 5s, type: const, ops: 5}
     startup:
       - type: once
         times: 10000
